@@ -20,11 +20,22 @@ export default function LoginPage() {
     setIsLoading(true)
 
     /** Simulate authentication delay: start */
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // await new Promise((resolve) => setTimeout(resolve, 1000))
     /** Simulate authentication delay: end */
 
-    router.push("/workflows")
-    setIsLoading(false)
+    // router.push("/workflows")
+    // setIsLoading(false)
+
+    const domain = 'https://genesys-user-pool.auth.us-east-1.amazoncognito.com'
+    const clientId = '5g5rdsptri79c98pvuopsv5dta'
+    const redirectUri = encodeURIComponent('http://localhost:3000/idpresponse')
+    const responseType = 'code' // Use 'token' if using implicit flow (not recommended)
+    const scope = 'openid profile email'
+
+    const loginUrl = `${domain}/oauth2/authorize?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scope)}`
+
+    // Redirect to Cognito hosted UI
+    window.location.href = loginUrl
   }
 
   return (
