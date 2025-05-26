@@ -1,0 +1,107 @@
+"use client"
+
+import { useState } from "react"
+import { Handle, Position, type NodeProps, useReactFlow } from "reactflow"
+import { BarChart3, ChevronDown, ChevronUp, Trash2, Copy, Settings } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Textarea } from "../ui/textarea"
+import React from "react"
+
+export function ResultNode({ id, data, selected }: NodeProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const { setNodes } = useReactFlow();
+  
+  const [nodeData, setNodeData] = useState({
+    result_output: data?.result_output || "",
+  })
+
+  React.useEffect(() => {
+    if (data) {
+      setNodeData({
+        result_output: data.result_output || nodeData.result_output,
+      })
+    }
+  }, [data]);
+  
+const handleChange = (e: any) => {
+    if(e.target) {
+      const {name, value} = e.target;
+      const updatedData = { ...nodeData, [name]: value };
+      setNodeData(updatedData);
+
+      setNodes((nodes) =>
+        nodes.map((node) => {
+          if (node.id === id) {
+            // Create a custom event with all the node data
+            const event = new CustomEvent("task-node-updated", {
+              detail: {
+                id,
+                data: updatedData,
+                position: {
+                  x: node.position.x,
+                  y: node.position.y
+                }
+              },
+            })
+
+            // Dispatch the event
+            document.dispatchEvent(event)
+            return {...node, data: { ...node.data, ...updatedData}}
+          }
+          return node
+        }),
+      )
+    }
+  }  
+
+  return (
+    <Card className={`w-80 shadow-md node-type-result`}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-center w-8 h-8 rounded-md bg-amber-500/10 text-amber-500">
+            <BarChart3 className="h-5 w-5" />
+          </div>
+          <CardTitle className="text-base font-medium">Result</CardTitle>
+        </div>
+        <div className="flex items-center gap-1">
+          <Badge variant="outline" className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20">
+            Result
+          </Badge>
+          <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+            <CollapsibleTrigger className="rounded-md p-1 hover:bg-accent">
+              {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </CollapsibleTrigger>
+          </Collapsible>
+        </div>
+      </CardHeader>
+
+      <Collapsible open={isOpen}>
+        <CollapsibleContent>
+          <CardContent className="p-4 pt-0">
+            <div className="space-y-3">
+
+              <div className="grid gap-1">
+                <Textarea
+                  placeholder="Output"
+                  className="w-100 bg-background"
+                  name="result_output"
+                  value={nodeData.result_output}
+                  onChange={handleChange}
+                />
+
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+              </div>
+            </div>
+          </CardContent>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <Handle type="target" position={Position.Left} className="w-3 h-3 border-2" />
+    </Card>
+  )
+}
