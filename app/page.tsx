@@ -26,15 +26,19 @@ export default function LoginPage() {
     // router.push("/workflows")
     // setIsLoading(false)
 
-    const domain = 'https://genesys-user-pool.auth.us-east-1.amazoncognito.com'
-    const clientId = '5g5rdsptri79c98pvuopsv5dta'
-    const redirectUri = encodeURIComponent('http://localhost:3000/idpresponse')
-    const responseType = 'code' // Use 'token' if using implicit flow (not recommended)
-    const scope = 'openid profile email'
+    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID
+    const redirectUri = process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI
+    const scope = process.env.NEXT_PUBLIC_COGNITO_SCOPE
 
-    const loginUrl = `${domain}/oauth2/authorize?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scope)}`
+    if (!domain || !clientId || !redirectUri || !scope) {
+      console.log("Missing environment variables for Cognito configuration")
+      setIsLoading(false)
+      return
+    }
 
-    // Redirect to Cognito hosted UI
+    const loginUrl = `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
+    
     window.location.href = loginUrl
   }
 
