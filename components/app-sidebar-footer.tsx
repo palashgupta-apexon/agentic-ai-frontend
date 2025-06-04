@@ -4,9 +4,13 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Plus, LogOut, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from '@/components/AuthProvider'
+
 const AppSidebarFooter = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+
+  const { logout } = useAuth()
 
   React.useEffect(() => setMounted(true), []);
 
@@ -29,7 +33,7 @@ const AppSidebarFooter = () => {
         </Button>
       </Link>
       <Link href="/">
-        <Button variant="outline">
+        <Button variant="outline" onClick={logout}>
           <LogOut />
         </Button>
       </Link>

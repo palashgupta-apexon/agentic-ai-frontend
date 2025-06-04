@@ -19,6 +19,9 @@ import {
   ChartNetwork,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { useEffect } from 'react'
+import { useAuth } from '@/components/AuthProvider'
+import RequireAuth from "@/components/RequireAuth"
 
 // Sample workflow data
 const sampleWorkflows = [
@@ -69,6 +72,8 @@ const sampleWorkflows = [
 ]
 
 export default function WorkflowsPage() {
+  const { isAuthenticated, accessToken, logout } = useAuth()
+
   const [searchQuery, setSearchQuery] = useState("")
 
   const filteredWorkflows = sampleWorkflows.filter(
@@ -94,59 +99,63 @@ export default function WorkflowsPage() {
     return html;
   }
 
+  // if (!isAuthenticated) return <p>Loading...</p>
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Workflows</h1>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search workflows..."
-              className="w-64 pl-8 bg-background"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+    <RequireAuth>
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Workflows</h1>
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search workflows..."
+                className="w-64 pl-8 bg-background"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredWorkflows.map((workflow) => (
-          <Link href={`/workflows/${workflow.id}`} key={workflow.id}>
-            <Card className="h-full cursor-pointer hover:border-crew hover:shadow-md transition-all">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-md ${workflow.color}`}>
-                    <workflow.icon className="h-6 w-6" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredWorkflows.map((workflow) => (
+            <Link href={`/workflows/${workflow.id}`} key={workflow.id}>
+              <Card className="h-full cursor-pointer hover:border-crew hover:shadow-md transition-all">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`flex items-center justify-center w-10 h-10 rounded-md ${workflow.color}`}>
+                      <workflow.icon className="h-6 w-6" />
+                    </div>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {workflow.lastEdited}
+                    </div>
                   </div>
-                  <div className="flex items-center text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    {workflow.lastEdited}
+                  <h3 className="text-xl font-bold mb-2">{workflow.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{workflow.description}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {showStatus(workflow.status)}
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        <span>{workflow.agents} Agents</span>
+                      </Badge>
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <FlowIcon className="h-3 w-3" />
+                        <span>{workflow.tasks} Tasks</span>
+                      </Badge>
+                    </div>
+                    <Trash2 size={16} />
                   </div>
-                </div>
-                <h3 className="text-xl font-bold mb-2">{workflow.name}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{workflow.description}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {showStatus(workflow.status)}
-                    <Badge variant="outline" className="flex items-center gap-1">
-                      <Users className="h-3 w-3" />
-                      <span>{workflow.agents} Agents</span>
-                    </Badge>
-                    <Badge variant="outline" className="flex items-center gap-1">
-                      <FlowIcon className="h-3 w-3" />
-                      <span>{workflow.tasks} Tasks</span>
-                    </Badge>
-                  </div>
-                  <Trash2 size={16} />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+    </RequireAuth>
   )
 }
