@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Plus, LogOut, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from '@/components/AuthProvider'
+import { useAuth } from '@/components/AuthProvider';
+import RequireAuth from "@/components/RequireAuth";
 
 const AppSidebarFooter = () => {
   const { theme, setTheme } = useTheme();
@@ -17,27 +18,29 @@ const AppSidebarFooter = () => {
   if (!mounted) return null;
 
   return (
-    <div className="flex gap-1" style={{ alignItems: "center" }}>
-      {mounted && (
-        <Button
-          variant="outline"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        >
-          {theme === "dark" ? <Sun /> : <Moon />}
-        </Button>
-      )}
-      <Link href="/workflows/new">
-        <Button className="bg-crew hover:bg-crew-dark">
-          <Plus />
-          New Workflow
-        </Button>
-      </Link>
-      <Link href="/">
-        <Button variant="outline" onClick={logout}>
-          <LogOut />
-        </Button>
-      </Link>
-    </div>
+    <RequireAuth>
+      <div className="flex gap-1" style={{ alignItems: "center" }}>
+        {mounted && (
+          <Button
+            variant="outline"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? <Sun /> : <Moon />}
+          </Button>
+        )}
+        <Link href="/workflows/new">
+          <Button className="bg-crew hover:bg-crew-dark">
+            <Plus />
+            New Workflow
+          </Button>
+        </Link>
+        <Link href="/">
+          <Button variant="outline" onClick={logout}>
+            <LogOut />
+          </Button>
+        </Link>
+      </div>
+    </RequireAuth>
   );
 };
 

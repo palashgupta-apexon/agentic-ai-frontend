@@ -99,8 +99,6 @@ export default function WorkflowsPage() {
     return html;
   }
 
-  // if (!isAuthenticated) return <p>Loading...</p>
-
   return (
     <RequireAuth>
       <div className="max-w-6xl mx-auto">
