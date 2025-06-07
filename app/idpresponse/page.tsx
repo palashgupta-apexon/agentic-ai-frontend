@@ -24,6 +24,11 @@ export default function Idpresponse() {
     }
 
     const exchangeToken = async () => {
+      // const clientId = '5g5rdsptri79c98pvuopsv5dta'
+      // const clientSecret = '1a7u8tlbqhgo625ihqofm512mfm7vuprjkrkh8oi0q3cpft6h4mn'
+      // const redirectUri = 'https://dev3.agentic-ai.apexon-genesys.com/idpresponse'
+      // const domain = 'https://genesys-user-pool.auth.us-east-1.amazoncognito.com'
+
       const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID!
       const clientSecret = process.env.NEXT_PUBLIC_COGNITO_CLIENT_SECRET!
       const redirectUri = process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI!
