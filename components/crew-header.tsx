@@ -12,6 +12,8 @@ interface CrewHeaderProps {
   workflowData?: any
   saveWorkflow: any
   runWorkflow: any
+  // workflowName: any
+  // setWorkflowName: any
 }
 
 export function CrewHeader({ workflowData, saveWorkflow, runWorkflow }: CrewHeaderProps) {
@@ -20,7 +22,7 @@ export function CrewHeader({ workflowData, saveWorkflow, runWorkflow }: CrewHead
       <div className="flex items-center gap-2">
         <SidebarTrigger />
         <Separator orientation="vertical" className="h-6" />
-        <Input placeholder="Untitled Flow" className="w-60 h-9 bg-background" defaultValue={workflowData.workflow_name || 'Test'} />
+        <Input placeholder="Untitled Flow" className="w-60 h-9 bg-background" defaultValue={workflowData.workflow_name} />
       </div>
 
       <div className="flex-1 flex justify-center">
