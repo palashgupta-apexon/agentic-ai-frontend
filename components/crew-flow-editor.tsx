@@ -136,17 +136,17 @@ function FlowEditor({ workflowId, showHeader = true }: FlowEditorProps) {
   }, [workflowId, reactFlowReady])
 
   /** Only works when we upload the file */
-  // React.useEffect(() => {
-  //   if (workflowId === 'new' && workflow.nodes.length && !initializedRef.current) {
-  //     initializedRef.current = true;
+  React.useEffect(() => {
+    if (workflowId === 'new' && workflow.nodes.length && !initializedRef.current) {
+      initializedRef.current = true;
 
-  //     const generatedNodes = transformWorkflow(workflow);
-  //     setNodes(generatedNodes);
+      const generatedNodes = transformWorkflow(workflow);
+      setNodes(generatedNodes);
 
-  //     const generatedEdges = generateEdgesFromNodes(workflow);
-  //     setEdges(generatedEdges);
-  //   }
-  // }, [workflowId, workflow]);
+      const generatedEdges = generateEdgesFromNodes(workflow);
+      setEdges(generatedEdges);
+    }
+  }, [workflowId, workflow]);
 
   const onConnect = React.useCallback(
     (params: Connection | Edge) => setEdges((eds) => addEdge({ ...params, type: "custom" }, eds)),
