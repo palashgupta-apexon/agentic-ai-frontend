@@ -165,7 +165,7 @@ export function CrewHeader({ workflowData, setWorkflow, setWorkflowName, setWork
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={handleUploadButtonClick}>
+                <Button variant="outline" size="icon" onClick={handleUploadButtonClick} disabled={true}>
                   <Upload className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
