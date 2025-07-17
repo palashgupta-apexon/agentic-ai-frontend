@@ -55,18 +55,6 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    /** Simulate authentication delay: start */
-    // await new Promise((resolve) => setTimeout(resolve, 1000))
-    /** Simulate authentication delay: end */
-
-    // router.push("/workflows")
-    // setIsLoading(false)
-
-    // const domain = 'https://genesys-user-pool.auth.us-east-1.amazoncognito.com'
-    // const clientId = '5g5rdsptri79c98pvuopsv5dta'
-    // const redirectUri = 'https://dev3.agentic-ai.apexon-genesys.com/idpresponse'
-    // const scope = 'openid profile email'
-
     const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN!
     const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID!
     const redirectUri = process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI!
@@ -84,17 +72,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex justify-center light" style={{ colorScheme: "light" }}>
-      {/* <div className="left w-2/5 relative">
-        <div className="shade absolute top-0 bg-blue-700 h-full z-10 w-full opacity-75"></div>
-        <div className="powered text-sm text-white flex justify-center gap-2 items-center absolute top-0 left-0 p-2 z-20">
-          <span>powered by</span>
-          <img src={poweredBy.src} alt="Powered by Apexon" />
-        </div>
-        <img src={loginBg.src} className="w-full h-full object-cover" alt="login-bg" />
-      </div> */}
-
       <div className="hidden md:block w-[45%] relative overflow-hidden rounded-3xl m-3">
-        {/* Top-right "Powered by" badge */}
         <div className="absolute top-3 left-5 text-sm text-white flex justify-center gap-2 items-center z-20">
           <span>powered by</span>
           <img src={poweredBy.src} alt="Powered by Apexon" />
