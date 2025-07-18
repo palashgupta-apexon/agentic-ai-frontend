@@ -72,7 +72,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex justify-center light" style={{ colorScheme: "light" }}>
-      <div className="hidden md:block w-[45%] relative overflow-hidden rounded-3xl m-3">
+      <div className="hidden md:block w-[40%] relative overflow-hidden rounded-3xl m-3">
         <div className="absolute top-3 left-5 text-sm text-white flex justify-center gap-2 items-center z-20">
           <span>powered by</span>
           <img src={poweredBy.src} alt="Powered by Apexon" />
@@ -96,7 +96,7 @@ export default function LoginPage() {
         <div className="absolute top-5 left-5 text-white text-xs">Powered by <strong>Apexaon</strong></div>
       </div>
 
-      <div className="right w-[55%] flex flex-col items-center justify-center text-gray-900">
+      <div className="right w-[60%] flex flex-col items-center justify-center text-gray-900">
         <div className="flex flex-col justify-center" style={{ flexGrow: "1" }}>
           <div className="mt-5 flex justify-center">
             <Logo />
