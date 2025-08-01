@@ -7,28 +7,28 @@ import { Input } from "@/components/ui/input"
 import { Search, Users, Trash2, Workflow, Wrench, Copy, Info } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { toast } from 'react-toastify';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 import RequireAuth from "@/components/RequireAuth"
 import { deleteWorkflow, getWorkflow } from "@/services/WorkflowServices"
 import PreLoader from "@/components/PreLoader"
 import SettingMenu from "@/components/setting-menu"
 import CloneModal from "@/components/clone-modal"
+import { useWorkflowStore } from "@/store/WorkflowStore"
 
 export default function WorkflowsPage() {
 
-  const [allWorkflows, setAllWorkflows] = React.useState<any>([]);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isAdmin, setIsAdmin] = React.useState<string | null>('');
   const [showInfoIndex, setShowInfoIndex] = React.useState<number | null>();
   const [showCloneModal, setShowCloneModal] = React.useState<boolean>(false);
   const [selectedWorkflowId, setSelectedWorkflowId] = React.useState<string>('');
 
+  const { workflows, loading, fetchWorkflows } = useWorkflowStore()
+
   React.useEffect( () => {
-    getAllWorkflow();
+    fetchWorkflows();
     setIsAdmin(localStorage.getItem('is_agentic_admin'));
-  }, []);
+  }, [fetchWorkflows]);
 
   const generateRandomColor = () => {
     const colorArr = ['orange', 'amber', 'green', 'cyan', 'blue', 'indigo'];
@@ -37,35 +37,11 @@ export default function WorkflowsPage() {
     return `bg-${color}-500/10 text-${color}-500`;
   }
 
-  const getAllWorkflow = () => {
-    setIsLoading(true);
-    getWorkflow().then((resp: any) => {
-      const updatedData = resp.data.map((item: any) => ({
-        ...item,
-        icon: Workflow,
-        color: generateRandomColor(),
-        createdAt: formatDate(item.created_at),
-        editedAt: formatDate(item.updated_at),
-        agents: getTypeCount(item, 'agent'),
-        tasks: getTypeCount(item, 'task'),
-        status: 'success'
-      }));
-      setAllWorkflows(updatedData);
-      setIsLoading(false);
-    }).catch((err: any) => {
-      const status = err.response.status;
-      const data = err.response.data;
-      const errorMessage = data.message || data.error || 'Something went wrong';
-      toast.error(`Error ${status}: ${errorMessage}`);
-      setIsLoading(false);
-    });
-  }
-
   const getTypeCount = (obj: any, key: any) => {
     return obj.nodes.filter((node: any) => typeof node.id === 'string' && node.id.startsWith(`${key}-`)).length;
   }
 
-  const filteredWorkflows = allWorkflows.filter(
+  const filteredWorkflows = workflows.filter(
     (workflow: any) =>
       workflow.workflow_name.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -82,7 +58,9 @@ export default function WorkflowsPage() {
     if(confirm('Confirm delete?')) {
       deleteWorkflow(id).then( (resp: any) => {
         toast.success(resp.data.message);
-        getAllWorkflow();
+        useWorkflowStore.setState((state) => ({
+          workflows: state.workflows.filter((w) => w.id !== id),
+        }))
       } ).catch( (err: any) => {
         const status = err.response.status;
         const data = err.response.data;
@@ -99,7 +77,8 @@ export default function WorkflowsPage() {
 
   return (
     <RequireAuth>
-      {isLoading ? (<PreLoader />) : (<></>)}
+      {/* {isLoading ? (<PreLoader />) : (<></>)} */}
+      {loading ? (<PreLoader />) : (<></>)}
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Workflows</h1>

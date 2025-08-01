@@ -3,7 +3,7 @@
 import React from "react"
 import { useCallback, useEffect, useState, memo, useTransition } from "react"
 import { Handle, Position, useReactFlow, type NodeProps } from "reactflow"
-import { Wrench, ChevronDown, ChevronUp, Copy } from "lucide-react"
+import { Wrench, ChevronDown, ChevronUp } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,16 +12,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
 import { Label } from "../ui/label"
-import { fileUploadForTool, getAllUploadedFile, getTools, getUploadedFileByName } from "@/services/ToolsServices";
 import { toast } from "react-toastify"
+
+import { fileUploadForTool, getAllUploadedFile, getUploadedFileByName } from "@/services/ToolsServices";
+import { useToolStore } from "@/store/ToolStore"
 import PreLoader from "../PreLoader"
 
 function ToolNodeComponent({ id, data, selected }: NodeProps) {
-  const { setNodes } = useReactFlow()
 
+  const { tools: allTools, fetchTools } = useToolStore()
+  const { setNodes } = useReactFlow()
   const [isOpen, setIsOpen] = useState(false)
   const [toolName, setToolName] = useState(data?.tool_name || "New Tool")
-  const [allTools, setAllTools] = useState<any[]>([])
   const [selectedTool, setSelectedTool] = useState<any>(null)
   const [schema, setSchema] = useState<any>({})
   const [file, setFile] = useState<File | null>(null);
@@ -178,29 +180,6 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
     }
   };
 
-  /** Function to get all tools */
-  const getAllTools = () => {
-    getTools().then((tools) => {
-
-      /** Set all tool in the state for further use */
-      setAllTools(tools)
-
-      /** If we fetch the workflow and workflow have a tool */
-      if (data.tool_name) {
-          const tool = tools.find(
-            (t: any) => t.original_id === data.tool_name || t.name === data.tool_name
-          )
-          if (tool) {
-            setSelectedTool(tool)
-            setSchema(tool.parameters_schema || {})
-          }
-        }
-      })
-      .catch((err) => {
-        toast.error(err.message)
-      })
-  }
-
   /** Function to render configuration fields dynamically */
   const renderField = useCallback((fieldName: string, config: any, index: string) => {
     const fieldValue = nodeData[fieldName] ?? config.default ?? "";
@@ -322,6 +301,18 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
     [id, nodeData, handleFieldChange, schema],
   )
 
+  /** show dymanic fields of select tool in edit mode */
+  useEffect(() => {
+    if (!data?.tool_name || !allTools.length) return;
+    const tool = allTools.find(
+      (t: any) => t.original_id === data.tool_name || t.name === data.tool_name
+    );
+    if (tool) {
+      setSelectedTool(tool);
+      setSchema(tool.parameters_schema || {});
+    }
+  }, [allTools, data?.tool_name]);
+
   /** Initialize data from props */
   useEffect(() => {
     if (data) {
@@ -339,10 +330,10 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
     }
   }, [data])
 
-  /** Fetch all tools on mount */
+  /** Fetch all tools on mount; but from store only */
   useEffect(() => {
-    getAllTools();
-  }, [])
+    fetchTools();
+  }, [fetchTools])
 
   useEffect(() => {
     if (schema && Object.keys(schema).length > 0 && data) {
@@ -358,7 +349,6 @@ function ToolNodeComponent({ id, data, selected }: NodeProps) {
       setNodeData(prev => ({ ...prev, ...newData }));
     }
   }, [schema, data, selected]);
-
 
   useEffect(() => {
     if (filePath) {
